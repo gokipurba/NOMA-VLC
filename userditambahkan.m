@@ -88,40 +88,48 @@ for i = 0:0.1:1
 
     %% Normalized gain difference power allocation (NGDPA)
     % LED 1
-    alpha1 = ((h1_o1 - h1_o2 - h1_03)/h1_o1)^3;
-
-    p1_o2 = 1/(1 + alpha1);
+    alpha1 = ((h1_o1 - h1_o2 - h1_o3)/h1_o1)^3;
+    
+    p1_o3 = 1/(1 + alpha1);
+    p1_o2 = alpha1*p1_o3;
     p1_o1 = alpha1*p1_o2;
-    P1 = [p1_o2 p1_o1];
+    P1 = [p1_o3 p1_o2 p1_o1];
 
     p1_u1 = P1(I1(1));
     p1_u2 = P1(I1(2));
+    p1_u3 = P1(I1(3));
 
     % LED 2
-    alpha2 = ((h2_o1 - h2_o2 - h2_03)/h2_o1)^3;
+    alpha2 = ((h2_o1 - h2_o2 - h2_o3)/h2_o1)^3;
 
-    p2_o2 = 1/(1 + alpha2);
+    p2_o3 = 1/(1 + alpha2);
+    p2_o2 = alpha2*p2_o3;
     p2_o1 = alpha2*p2_o2;
 
     if alpha2 == 0
-        P2 = [p2_o1 p2_o2];
+        P2 = [p2_o1 p2_o2 p2_o3];
     else
-        P2 = [p2_o2 p2_o1];
+        P2 = [p2_o3 p2_o2 p2_o1];
     end
 
     p2_u1 = P2(I2(1));
     p2_u2 = P2(I2(2));
+    p2_u3 = P2(I2(3));
 
     %% AWGN niose
     Prx1_u1 = (H_u1(1,1)+H_u1(1,2))*Ptx;
     Prx2_u1 = (H_u1(2,1)+H_u1(2,2))*Ptx;
     Prx1_u2 = (H_u2(1,1)+H_u2(1,2))*Ptx;
     Prx2_u2 = (H_u2(2,1)+H_u2(2,2))*Ptx;
+    Prx1_u3 = (H_u3(1,1)+H_u3(1,2))*Ptx;
+    Prx2_u3 = (H_u3(2,1)+H_u3(2,2))*Ptx;
 
     Pn1_u1 = sigma2_noise(Prx1_u1,BW);
     Pn2_u1 = sigma2_noise(Prx2_u1,BW);
     Pn1_u2 = sigma2_noise(Prx1_u2,BW);
     Pn2_u2 = sigma2_noise(Prx2_u2,BW);
+    Pn1_u3 = sigma2_noise(Prx1_u3,BW);
+    Pn2_u3 = sigma2_noise(Prx2_u3,BW);
 
     Pn1_u1_est = ((H_u1_inv(1,1))^2*Pn1_u1 + (H_u1_inv(1,2))^2*Pn2_u1)...
         /(RP*Ptx*MI)^2;
@@ -135,23 +143,40 @@ for i = 0:0.1:1
     Pn2_u2_est = ((H_u2_inv(2,1))^2*Pn1_u2 + (H_u2_inv(2,2))^2*Pn2_u2)...
         /(RP*Ptx*MI)^2;
 
+    Pn1_u3_est = ((H_u3_inv(1,1))^2*Pn1_u3 + (H_u3_inv(1,2))^2*Pn2_u3)...
+        /(RP*Ptx*MI)^2;
+
+    Pn2_u3_est = ((H_u3_inv(2,1))^2*Pn1_u3 + (H_u3_inv(2,2))^2*Pn2_u3)...
+        /(RP*Ptx*MI)^2;
+
     %% Sum rate (Mb/s)
-    if p1_u1 >= p1_u2
-        SNR1_u1 = p1_u1/(p1_u2 + Pn1_u1_est);
+    if p1_u1 >= p1_u2 && p1_u1 >= p1_u3
+        SNR1_u1 = p1_u1/(p1_u2 + p1_u3 + Pn1_u1_est);
         SNR1_u2 = p1_u2/Pn1_u2_est;
+        SNR1_u3 = p1_u3/Pn1_u3_est;
+    elseif p1_u2 >= p1_u1 && p1_u2 >= p1_u3
+        SNR1_u1 = p1_u1/Pn1_u1_est;
+        SNR1_u2 = p1_u2/(p1_u1 + p1_u3 + Pn1_u2_est);
+        SNR1_u3 = p1_u3/Pn1_u3_est;
     else
         SNR1_u1 = p1_u1/Pn1_u1_est;
-        SNR1_u2 = p1_u2/(p1_u1 + Pn1_u2_est);
+        SNR1_u2 = p1_u2/Pn1_u2_est;
+        SNR1_u3 = p1_u3/(p1_u1 + p1_u2 + Pn1_u3_est);
     end
-
-    if p2_u1 >= p2_u2
-        SNR2_u1 = p2_u1/(p2_u2 + Pn2_u1_est);
+    
+    if p2_u1 >= p2_u2 && p2_u1 >= p2_u3
+        SNR2_u1 = p2_u1/(p2_u2 + p2_u3 + Pn2_u1_est);
         SNR2_u2 = p2_u2/Pn2_u2_est;
+        SNR2_u3 = p2_u3/Pn2_u3_est;
+    elseif p2_u2 >= p2_u1 && p2_u2 >= p2_u3
+        SNR2_u1 = p2_u1/Pn2_u1_est;
+        SNR2_u2 = p2_u2/(p2_u1 + p2_u3 + Pn2_u2_est);
+        SNR2_u3 = p2_u3/Pn2_u3_est;
     else
         SNR2_u1 = p2_u1/Pn2_u1_est;
-        SNR2_u2 = p2_u2/(p2_u1 + Pn2_u2_est);
+        SNR2_u2 = p2_u2/Pn2_u2_est;
+        SNR2_u3 = p2_u3/(p2_u1 + p2_u2 + Pn2_u3_est);
     end
-
     % % Average BER
     % BER1_u1 = theoMQAM(real(SNR1_u1),I,J);
     % BER2_u1 = theoMQAM(real(SNR2_u1),I,J);
@@ -165,9 +190,11 @@ for i = 0:0.1:1
     R_NOMA2_u1 = 0.5*BW*log2(1 + SNR2_u1);
     R_NOMA1_u2 = 0.5*BW*log2(1 + SNR1_u2);
     R_NOMA2_u2 = 0.5*BW*log2(1 + SNR2_u2);
+    R_NOMA1_u3 = 0.5*BW*log2(1 + SNR1_u3);
+    R_NOMA2_u3 = 0.5*BW*log2(1 + SNR2_u3);
 
-    R_NOMA1 = real(R_NOMA1_u1 + R_NOMA1_u2)/10^6; % LED 1
-    R_NOMA2 = real(R_NOMA2_u1 + R_NOMA2_u2)/10^6; % LED 2
+    R_NOMA1 = real(R_NOMA1_u1 + R_NOMA1_u2 + R_NOMA1_u3)/10^6; % LED 1
+    R_NOMA2 = real(R_NOMA2_u1 + R_NOMA2_u2 + R_NOMA2_u3)/10^6; % LED 2
 
     R_NOMA(T) = R_NOMA1 + R_NOMA2 % unit: Mbit/s
 end
