@@ -67,24 +67,28 @@ for i = 0:0.1:1
     % LED 1
     h1_u1 = h11_u1 + h21_u1;
     h1_u2 = h11_u2 + h21_u2;
-    H1 = [h1_u1 h1_u2];
+    h1_u3 = h11_u3 + h21_u3;
+    H1 = [h1_u1 h1_u2 h1_u3];
     [HH1,I1] = sort(H1); % from small to large
 
-    h1_o1 = HH1(2);
-    h1_o2 = HH1(1);
+    h1_o1 = HH1(3);
+    h1_o2 = HH1(2);
+    h1_o3 = HH1(1);
 
     % LED 2
     h2_u1 = h12_u1 + h22_u1;
     h2_u2 = h12_u2 + h22_u2;
-    H2 = [h2_u1 h2_u2];
+    h2_u3 = h12_u3 + h22_u3;
+    H2 = [h2_u1 h2_u2 h2_u3];
     [HH2,I2] = sort(H2); % from small to large
 
-    h2_o1 = HH2(2);
-    h2_o2 = HH2(1);
+    h2_o1 = HH2(3);
+    h2_o2 = HH2(2);
+    h2_o3 = HH2(1);
 
     %% Normalized gain difference power allocation (NGDPA)
     % LED 1
-    alpha1 = ((h1_o1 - h1_o2)/h1_o1)^2;
+    alpha1 = ((h1_o1 - h1_o2 - h1_03)/h1_o1)^3;
 
     p1_o2 = 1/(1 + alpha1);
     p1_o1 = alpha1*p1_o2;
@@ -94,7 +98,7 @@ for i = 0:0.1:1
     p1_u2 = P1(I1(2));
 
     % LED 2
-    alpha2 = ((h2_o1 - h2_o2)/h2_o1)^2;
+    alpha2 = ((h2_o1 - h2_o2 - h2_03)/h2_o1)^3;
 
     p2_o2 = 1/(1 + alpha2);
     p2_o1 = alpha2*p2_o2;
