@@ -33,6 +33,11 @@ for i = 0:0.1:1
     xr_u2 = r; yr_u2 = 0; zr_u2 = 0.85;
     xr1_u2 = xr_u2 - delta_PD/2; yr1_u2 = yr_u2; zr1_u2 = zr_u2; % PD 1
     xr2_u2 = xr_u2 + delta_PD/2; yr2_u2 = yr_u2; zr2_u2 = zr_u2; % PD 2
+    
+    % Location of user3
+    xr_u3 = xr_u2 + r; yr_u3 = 0; zr_u3 = 0.85;
+    xr1_u3 = xr_u3 - delta_PD/2; yr1_u3 = yr_u3; zr1_u3 = zr_u3; % PD 1
+    xr2_u3 = xr_u3 + delta_PD/2; yr2_u3 = yr_u3; zr2_u3 = zr_u3; % PD 2
 
     %% Channel matrix
     h11_u1 = get_channel_DC_gain(xr1_u1,yr1_u1,zr1_u1,xt1,yt1,zt1);
@@ -44,12 +49,19 @@ for i = 0:0.1:1
     h12_u2 = get_channel_DC_gain(xr1_u2,yr1_u2,zr1_u2,xt2,yt2,zt2);
     h21_u2 = get_channel_DC_gain(xr2_u2,yr2_u2,zr2_u2,xt1,yt1,zt1);
     h22_u2 = get_channel_DC_gain(xr2_u2,yr2_u2,zr2_u2,xt2,yt2,zt2);
-
+    
+    h11_u3 = get_channel_DC_gain(xr1_u3,yr1_u3,zr1_u3,xt1,yt1,zt1);
+    h12_u3 = get_channel_DC_gain(xr1_u3,yr1_u3,zr1_u3,xt2,yt2,zt2);
+    h21_u3 = get_channel_DC_gain(xr2_u3,yr2_u3,zr2_u3,xt1,yt1,zt1);
+    h22_u3 = get_channel_DC_gain(xr2_u3,yr2_u3,zr2_u3,xt2,yt2,zt2);
+    
     H_u1 = [h11_u1 h12_u1;h21_u1 h22_u1];
     H_u2 = [h11_u2 h12_u2;h21_u2 h22_u2];
+    H_u3 = [h11_u3 h12_u3;h21_u3 h22_u3];
 
     H_u1_inv = inv(H_u1);
     H_u2_inv = inv(H_u2);
+    H_u3_inv = inv(H_u3);
 
     %% Decoding order
     % LED 1

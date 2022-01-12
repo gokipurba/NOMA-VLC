@@ -153,8 +153,5 @@ R_NOMA2 = real(R_NOMA2_u1 + R_NOMA2_u2)/10^6; % LED 2
 
 R_NOMA = R_NOMA1 + R_NOMA2 % unit: Mbit/s
 
-for i = 0:0.1:1
-    disp(i)
 
-end
 
