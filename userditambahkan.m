@@ -199,7 +199,10 @@ for i = 0:0.1:1
     R_NOMA(T) = R_NOMA1 + R_NOMA2 % unit: Mbit/s
 end
 
-plot(0:0.1:1,R_NOMA)
+figure(1)
+plot(0:0.1:1,R_NOMA,'DisplayName','K = 3')
+
+
 legend
 
 

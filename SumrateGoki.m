@@ -152,11 +152,33 @@ for i = 0:0.1:1
 
     R_NOMA1 = real(R_NOMA1_u1 + R_NOMA1_u2)/10^6; % LED 1
     R_NOMA2 = real(R_NOMA2_u1 + R_NOMA2_u2)/10^6; % LED 2
-
-    R_NOMA(T) = R_NOMA1 + R_NOMA2 % unit: Mbit/s
+    
+    Led_1(T) = R_NOMA1;
+    Led_2(T) = R_NOMA2;
+    R_NOMA(T) = R_NOMA1 + R_NOMA2; % unit: Mbit/s
 end
+figure(1);
+plot(0:0.1:1,R_NOMA,"DisplayName","K = 2");
+xlabel('Normalized Offset \textit{r/R}');
+ylabel('Sum rate Mbit/s');
 
-plot(0:0.1:1,R_NOMA)
+
+figure(2);
+plot(0:0.1:1,Led_1,"DisplayName", "LED1");
+hold on
+plot(0:0.1:1,Led_2,"DisplayName", "LED2");
+xlabel('Normalized Offset \textit{r/R}');
+ylabel('Rate Mbit/s ')
+hold off
+FigW =6;
+FigH = 5.6;
+set(figure(2),'defaulttextinterpreter','latex','PaperUnits','inches',...
+    'Papersize',[FigW,FigH],'Paperposition',[0,0,FigW,FigH], 'Units', 'Inches',...
+    'Position',[0,0,FigW,FigH])
 legend
-
+set(figure(1),'defaulttextinterpreter','latex','PaperUnits','inches',...
+    'Papersize',[FigW,FigH],'Paperposition',[0,0,FigW,FigH], 'Units', 'Inches',...
+    'Position',[0,0,FigW,FigH])
+set(gca,'FontSize',10,'FontName','Arial');
+legend
 
